@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# script compares each item in dir against a text file of torrents i already have
+# if an item not found in the list is present, it creates a sym link of the item to my cinema directory
+
+readonly torrent_dir_path="/mnt/torrent_drive/"
+readonly cinema_path="/home/ryan/media/cinema/"
+readonly torrent_list="${torrent_dir_path}list_of_torrents.txt"
+
+[ -f $torrent_list ] || touch $torrent_list
+
+for i in ${torrent_dir_path}*; do
+	if [ "$i" = $torrent_list ]; then
+		continue
+	elif ! grep -Fq "${i##*/}" $torrent_list; then
+		cp -rs "$i" $cinema_path
+	fi
+done
+
+ls -1 $torrent_dir_path > $torrent_list
+
